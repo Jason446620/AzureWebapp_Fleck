@@ -39,7 +39,7 @@ namespace FleckWebsocket
             }
             //ipadd = "wss://" + ipAddress + ":80";
             string ipadd = "wss://panshubeinewfleck.azurewebsites.net:443";
-            //ipadd = "wss://" + ipAddress + ":8088";
+            ipadd = "wss://" + ipAddress + ":443";
             Fleck.WebSocketServer server = new Fleck.WebSocketServer(ipadd);
             string path = System.Environment.CurrentDirectory;
             bool isexist = System.IO.File.Exists(path + "//panshubeinewfleck.pfx");
