@@ -24,66 +24,72 @@ namespace FleckWebsocket
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            //string ipAddress = string.Empty;
-            //var host = System.Net.Dns.GetHostEntry(Dns.GetHostName());
+            string ipAddress = string.Empty;
+            var host = System.Net.Dns.GetHostEntry(Dns.GetHostName());
 
-            //List<IWebSocketConnection> sockets = new List<IWebSocketConnection>();
+            List<IWebSocketConnection> sockets = new List<IWebSocketConnection>();
 
-            //foreach (var ip in host.AddressList)
-            //{
-            //    if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-            //    {
-            //        ipAddress = ip.ToString();
-            //        break;
-            //    }
-            //}
-            ////ipadd = "ws://" + ipAddress + ":80";
-            //string ipadd = "wss://panshubeinewfleck.azurewebsites.net";
-            //ipadd = "ws://" + ipAddress + ":8088";
-            //Fleck.WebSocketServer server = new Fleck.WebSocketServer(ipadd);
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    ipAddress = ip.ToString();
+                    break;
+                }
+            }
+            //ipadd = "wss://" + ipAddress + ":80";
+            string ipadd = "wss://panshubeinewfleck.azurewebsites.net";
+            //ipadd = "wss://" + ipAddress + ":8088";
+            Fleck.WebSocketServer server = new Fleck.WebSocketServer(ipadd);
+            string path = System.Environment.CurrentDirectory;
+            bool isexist = System.IO.File.Exists(path + "//panshubeinewfleck.pfx");
+            if (isexist)
+            {
+                // if use `wss` ,need  Certificate
+                server.Certificate = new X509Certificate2(path + "//panshubeinewfleck.pfx", "panshubei");
+            }
+            // if use `wss` ,need  Certificate
+            //server.Certificate=new X509Certificate2("panshubeinewfleck.pfx","panshubei");
 
-            //// if use `wss` ,need  Certificate
-            ////server.Certificate=new X509Certificate2("panshubeinewfleck.pfx","panshubei");
-            
 
-            //try
-            //{
-            //    server.Start(socket =>
-            //    {
-                    
-            //        Trace.WriteLine("FleckSocket=>server.start");
-            //        socket.OnOpen = () =>
-            //        {
-            //            try
-            //            {
-            //                Trace.WriteLine("FleckSocket=>server.open");
-            //                sockets.Add(socket);
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                Trace.WriteLine("FleckSocket=>server.open err" + ex);
-            //                throw;
-            //            }
+            try
+            {
+                server.Start(socket =>
+                {
 
-            //        };
-            //        socket.OnClose = () =>
-            //        {
-            //            Trace.WriteLine("FleckSocket=>server.close");
-            //            sockets.Remove(socket);
-            //        };
-            //        socket.OnMessage = message =>
-            //        {
-            //            Trace.WriteLine("FleckSocket=>server.message and the message is : " + message);
-            //            sockets.ToList().ForEach(s => s.Send(" client says: " + message));
-            //        };
+                    Trace.WriteLine("FleckSocket=>server.start");
+                    socket.OnOpen = () =>
+                    {
+                        try
+                        {
+                            Trace.WriteLine("FleckSocket=>server.open");
+                            sockets.Add(socket);
+                        }
+                        catch (Exception ex)
+                        {
+                            Trace.WriteLine("FleckSocket=>server.open err" + ex);
+                            throw;
+                        }
 
-            //    });
-            //}
-            //catch (Exception ex)
-            //{
-            //    Trace.WriteLine("FleckSocket=>err" + ex.ToString());
-            //    throw;
-            //}
+                    };
+                    socket.OnClose = () =>
+                    {
+                        Trace.WriteLine("FleckSocket=>server.close");
+                        sockets.Remove(socket);
+                    };
+                    socket.OnMessage = message =>
+                    {
+                        Trace.WriteLine("FleckSocket=>server.message and the message is : " + message);
+                        sockets.ToList().ForEach(s => s.Send(" client says: " + message));
+                    };
+
+                });
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("FleckSocket=>err" + ex.ToString());
+                throw;
+            }
         }
 
         public IConfiguration Configuration { get; }

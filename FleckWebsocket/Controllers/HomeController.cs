@@ -55,12 +55,15 @@ namespace FleckWebsocket.Controllers
                     break;
                 }
             }
-            string ipadd = "ws://panshubeinewfleck.azurewebsites.net";
+            //string ipadd = "wss://panshubeinewfleck.azurewebsites.net";
             //ipadd = "ws://" + ipAddress + ":80";
-            //Fleck.WebSocketServer server = new Fleck.WebSocketServer("wss://" + ipAddress + ":8088");
-            Fleck.WebSocketServer server = new Fleck.WebSocketServer(ipadd);
+            Fleck.WebSocketServer server = new Fleck.WebSocketServer("wss://" + ipAddress + ":8088");
+            //Fleck.WebSocketServer server = new Fleck.WebSocketServer(ipadd);
             string path = System.Environment.CurrentDirectory;
-            //bool isexist = System.IO.File.Exists(path + "//panshubei.club.pfx");
+            bool isexist = System.IO.File.Exists(path + "//panshubeiclub.pfx");
+            if (isexist) {
+                server.Certificate = new X509Certificate2(path+"//panshubeiclub.pfx", "panshubei");
+            }
             //server.Certificate = new X509Certificate2(path+"//panshubei.club.pfx", "panshubei");
             try
             {
